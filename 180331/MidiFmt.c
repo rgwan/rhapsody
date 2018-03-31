@@ -30,11 +30,11 @@ uint32_t calcMIDIlength(void *buffer)
 	register uint32_t i = 0;
 	register uint32_t chunksize;
 	register uint32_t high;
-	while(internalBuf[i] == 'M')
+	while(internalBuf[i] == 'M' || internalBuf[i] == 'X')
 	{
 		chunksize =  internalBuf[i + 7] + (internalBuf[i + 6] << 8);
 		high = (internalBuf[i + 5] << 16) + (internalBuf[i + 4] << 24);
-		//fprintf(fp, "i = %08x, sizel = %08x, sizeh = %08x", i, chunksize, high);
+		fprintf(fp, "i = %08x, sizel = %08x, sizeh = %08x, %c\n", i, chunksize, high, internalBuf[i]);
 		i += (4 + 4) + chunksize + high;
 	}
 	return i;
