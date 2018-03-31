@@ -1,3 +1,10 @@
+/*
+You 're a luck dog to find this stuff.
+For hooking YAMAHA's Karaoke player, it can save MIDI file to your disk.
+
+Author Zhiyuan Wan
+WTFPL
+*/
 #include <stdio.h>
 #include <stdint.h>
 #include <windows.h>
@@ -17,6 +24,22 @@ FILE *fp;
 
 static int lock = 0;
 
+uint32_t calcMIDIlength(void *buffer)
+{
+	uint8_t *internalBuf = buffer;
+	register uint32_t i = 0;
+	register uint32_t chunksize;
+	register uint32_t high;
+	while(internalBuf[i] == 'M')
+	{
+		chunksize =  internalBuf[i + 7] + (internalBuf[i + 6] << 8);
+		high = (internalBuf[i + 5] << 16) + (internalBuf[i + 4] << 24);
+		//fprintf(fp, "i = %08x, sizel = %08x, sizeh = %08x", i, chunksize, high);
+		i += (4 + 4) + chunksize + high;
+	}
+	return i;
+}
+
 DWORD WINAPI ThreadToWrite(LPVOID pM)
 {
 	FILE *midifp;
@@ -31,7 +54,7 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 	fprintf(fp, "Child process ID = %d\n", (uint32_t)GetCurrentThreadId());
 	fflush(fp);
 
-	Sleep(1000);
+	Sleep(1200);
 
 	memset(name, 0x00, sizeof(name));
 	strncpy(name, base_address + 0x134, 31);
@@ -44,11 +67,13 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 	fflush(fp);
 	if(ptrmidi != 0)
 	{
+		uint32_t filesize = calcMIDIlength(ptrmidi);
+		fprintf(fp, "MIDI file size = %08x %d\n", filesize, filesize);
 		sprintf(filename, "%s.mid", name);
 		midifp = fopen(filename, "wb+");
 		if(midifp != 0)
 		{
-			int ret = fwrite(ptrmidi, 1, 512 * 1024, midifp);
+			int ret = fwrite(ptrmidi, 1, filesize, midifp);
 			int fret = fflush(midifp);
 			int bytesWritten = ftell(midifp);
 			fclose(midifp);
