@@ -9,6 +9,7 @@ WTFPL
 #include <stdint.h>
 #include <windows.h>
 #include <unistd.h>
+#include <time.h>
 
 extern int __cdecl __declspec (dllexport)  MRACreateInstance(int a1, int a2);
 
@@ -46,6 +47,9 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 	void *ptrmidi;
 	char filename[64];
 	char name[32];
+	time_t timer;
+	struct tm *tblock;
+
 	//char filename[64];
 	if(lock)
 		return 0;
@@ -55,6 +59,9 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 	fflush(fp);
 
 	Sleep(1200);
+
+	timer = time(NULL);
+	tblock = localtime(&timer);
 
 	memset(name, 0x00, sizeof(name));
 	strncpy(name, base_address + 0x134, 31);
@@ -70,7 +77,18 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 		uint32_t filesize = calcMIDIlength(ptrmidi);
 		fprintf(fp, "MIDI file size = %08x %d\n", filesize, filesize);
 		sprintf(filename, "%s.mid", name);
+		midifp = fopen(filename, "rb");
+		if(midifp != 0)
+		{
+			fclose(midifp);
+			sprintf(filename, "%s-%d%d%d%d%d.mid", name, tblock->tm_mon, tblock->tm_mday, tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
+		}
 		midifp = fopen(filename, "wb+");
+		if(midifp == 0)
+		{
+			sprintf(filename, "%d%d%d%d%d.mid", tblock->tm_mon, tblock->tm_mday, tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
+			midifp = fopen(filename, "wb+");
+		}
 		if(midifp != 0)
 		{
 			int ret = fwrite(ptrmidi, 1, filesize, midifp);
