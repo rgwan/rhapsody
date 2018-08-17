@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <windows.h>
+#include <unistd.h>
+#include <time.h>
+
 /*
 You 're a luck dog to find this stuff.
 For hooking YAMAHA's Karaoke player, it can save MIDI file to your disk.
@@ -5,11 +11,6 @@ For hooking YAMAHA's Karaoke player, it can save MIDI file to your disk.
 Author Zhiyuan Wan
 WTFPL
 */
-#include <stdio.h>
-#include <stdint.h>
-#include <windows.h>
-#include <unistd.h>
-#include <time.h>
 
 extern int __cdecl __declspec (dllexport)  MRACreateInstance(int a1, int a2);
 
@@ -77,6 +78,12 @@ DWORD WINAPI ThreadToWrite(LPVOID pM)
 		uint32_t filesize = calcMIDIlength(ptrmidi);
 		fprintf(fp, "MIDI file size = %08x %d\n", filesize, filesize);
 		sprintf(filename, "%s.mid", name);
+		int i;
+		for(i = 0; i < strlen(filename); i++)
+		{
+			if(filename[i] == ':' || filename[i] == '?')
+				filename[i] = ' ';
+		}
 		midifp = fopen(filename, "rb");
 		if(midifp != 0)
 		{
@@ -190,4 +197,3 @@ int __cdecl MRACreateInstance(int a1, int a2)
 	//fclose(fp);
 	return ret;
 }
-
