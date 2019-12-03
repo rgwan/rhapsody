@@ -212,6 +212,8 @@ class Decoder(srd.Decoder):
             self.putx([jtag_states.index(self.oldstate), [self.oldstate]])
             self.putp(['NEW STATE', self.state])
             self.putx([21, [self.oldcjtagstate]])
+            if(self.cjtagstate.startswith("CJTAG-")):
+                self.putx([20, [str(tms)]])
             #self.putx([20, [str(tms)]])
             #self.putx([16, [str(tdi)]])
             #self.putx([17, [str(tdo)]])
