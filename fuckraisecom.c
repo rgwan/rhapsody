@@ -64,6 +64,8 @@ void decrypt_buf(char *in, char *out, int len)
 int main(int argc, char *argv[])
 {
     char *hpass = argv[1];//"5ZMfsRFY61KWtNkv0KQrUg0MLY8Klt8iyZr0ykghgayovi9a4VxqRtDnwqz26py";
+                          // BJPqJJx+U9b8x11T1H9fzkwIKPpe2IYf0nvSw1WtQQhPqDyPOyJNZCdHbb7j6n+
+                          // 4kk2i75d28Mrmhv+fyTgUYFUpsD+TK0baeaKJjDTZFNDSSs0YwuqYpkBli6cSsh
     char *lpass = argv[2];//"fMhlEDRRuxWTPtyk3ELemzJoKgSSNsKLP216Gw0ttrIBr0s8dcZmyyWkBC2n3I/";
 
     char *hpass_p;
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
                 allpass[i] = dec_lpass[j++];
             else
                 allpass[i] = dec_hpass[k++];
-        
+
         allpass[i] = 0;
 	}
 	else
@@ -104,6 +106,14 @@ int main(int argc, char *argv[])
 		memset(allpass, 0x00, 128);
 		strncpy(allpass, argv[1], 120);
 		len = strlen(allpass);
+        if(len == 63)
+        {
+            lpass_p = base64_decode(argv[1], len);
+            decrypt_buf(lpass_p, allpass, 48);
+            printf("password is '%s'\n", allpass);
+        	return 0;
+        }
+        
 	}
 
     for ( i = 0; i < len; i++ )
