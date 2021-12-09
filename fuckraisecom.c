@@ -110,15 +110,15 @@ int main(int argc, char *argv[])
         {
             lpass_p = base64_decode(argv[1], len);
             decrypt_buf(lpass_p, allpass, 48);
-            printf("password is '%s'\n", allpass);
-            return 0;
+            goto showpass; // 'zhjrqmwg!' I have no idea what the f*ck is.
         }
     }
 
     for (i = 0; i < len; i++)
         allpass[i] = allpass[i] - i - 5;
-    //fwrite(allpass, 1, 96, fp);
     allpass[i] = 0;
+    
+showpass:
     printf("password is '%s'\n", allpass);
     return 0;
 }
