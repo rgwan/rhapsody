@@ -14,7 +14,7 @@ read -t 0.2 -N 128 discard
 read -t 0.2 -N 128 discard
 
 read -t 0.2 -N 128 discard
-read -t 0.2 -N 128 discard
+read -t 1 -N 128 discard
 
 
 /usr/bin/stty echo
