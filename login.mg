@@ -1,4 +1,11 @@
 #!/bin/bash
+
+if [[ "$@" == +++* ]]; then #简单挂线
+sleep 1.5
+echo ATH
+exit 0;
+fi
+
 /bin/fflush
 /usr/bin/stty -echo
 
@@ -14,7 +21,7 @@ read -t 0.1 -N 128 discard
 read -t 0.5 -N 128 discard
 
 read -t 0.2 -N 128 discard
-read -t 1.5 -N 128 discard
+read -t 2 -N 128 discard
 
 
 /usr/bin/stty echo
